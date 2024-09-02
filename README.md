@@ -473,7 +473,10 @@ sum (rate (container_network_transmit_bytes_total{id!="/",kubernetes_io_hostname
 sum(rate(container_cpu_cfs_throttled_seconds_total{id!="/", kubernetes_io_hostname=~"^$Node$"}[$interval])) by (id)
 ```
 ![image](./img/28.png)
-
+- 將container在指定時間間隔內（$interval）因為CPU throttling 而被限制的秒數進行匯總。
+- 觀察Throttling的峰值: 圖表上的曲線代表不同容器的CPU Throttling數據。當曲線的值上升時，表示該容器在該時間點有較高的CPU Throttling發生。
+- 確認是否存在持續的Throttling現象: 如果曲線持續維持在較高的位置，這可能表示該容器持續受到CPU Throttling的限制，可能需要進一步調整該容器的資源配額。
+- 調整資源分配: 根據觀察到的CPU Throttling現象，可以適當調整容器的CPU配額，以減少或消除Throttling。
 
 可以再到worker確認這個container是屬於哪個pod
 ![image](./img/29.png)
