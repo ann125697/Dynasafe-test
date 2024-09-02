@@ -123,14 +123,14 @@ docker compose up -d
 ### 3.1 效能監控儀表板(1): 呈現node的效能監控數據
 * 點擊 Dashboards -> New -> New dashboard -> Import dashboard
 * 輸入官方提供 dashboard ID (8171) -> Load
-![image](https://hackmd.io/_uploads/BJzXNf7n0.png)
-![image](https://hackmd.io/_uploads/ByLHVG72C.png)
+![image](./img/1.png)
+![image](./img/2.png)
 
 ### 3.2 效能監控儀表板(2): 呈現kind 叢集的效能監控數據
 * 點擊 Dashboards -> New -> New dashboard -> Import dashboard
 * 輸入官方提供 dashboard ID (3119) -> Load
-![image](https://hackmd.io/_uploads/rk_lSfQ20.png)
-![image](https://hackmd.io/_uploads/HJtzHf7hR.png)
+![image](./img/3.png)
+![image](./img/4.png)
 * 修改無資料呈現的 PromQL
 
 ### 3.3 請說明以上的2個效能監控儀表板的每個panel內容。
@@ -138,7 +138,7 @@ docker compose up -d
 #### 3.3.1 Kubernetes Nodes
 
 ##### Idle CPU(閒置 CPU)
-![image](https://hackmd.io/_uploads/r1ZskX7hR.png)
+![image](./img/5.png)
 >查詢 Node 最近 5 分鐘內 CPU 的使用率。
 ```promQL!
 100 - (avg by (cpu) (irate(node_cpu_seconds_total{mode="idle", instance="$server"}[5m])) * 100)
@@ -147,7 +147,7 @@ docker compose up -d
 ---
 
 #### System Load (系統負載)
-![image](https://hackmd.io/_uploads/H1kxxXm20.png)
+![image](./img/6.png)
 >查詢 Node 1分鐘/5分鐘/15分鐘 平均系統負載
 >數值越高代表系統越繁忙，運行中及等待運行的 process 數量越多
 ```promQL!
@@ -164,7 +164,7 @@ node_load15{instance="$server"}
 
 
 #### Memory Usage (內存使用)
-![image](https://hackmd.io/_uploads/HkDAFzQhA.png)
+![image](./img/7.png)
 - 查詢計算實際內存使用量（以bytes為單位）
 - 減掉空閒內存(node_memory_MemFree_bytes)、緩存內存(node_memory_Buffers_bytes)和緩衝區的內存(node_memory_Cached_bytes)來得到正在使用的內存。
 ```promQL!
@@ -183,7 +183,7 @@ node_memory_MemFree_bytes{instance="$server"}
 ---
 
 #### Memory Usage (memory使用百分比)
-![image](https://hackmd.io/_uploads/SJjxWmXhA.png)
+![image](./img/8.png)
 - 查詢 Node memory 使用百分比。
 - 正在使用的memory除以總memory，乘以100得到使用百分比。
 ```promQL!
@@ -193,7 +193,7 @@ node_memory_MemFree_bytes{instance="$server"}
 ---
 
 #### Disk I/O (磁盤 I/O)
-![image](https://hackmd.io/_uploads/HJHQX77hC.png)
+![image]("./img/9.png")
 - Node 在最近2分鐘內每秒讀取、寫入的磁盤bytes數量及硬碟IO時間。
 - 用 rate() 函數計算時間內的平均讀取、寫入速率。
 ```promQL!
@@ -209,7 +209,7 @@ sum by (instance) (rate(node_disk_io_time_seconds_total{instance="$server"}[2m])
 ---
 
 #### Disk Space Usage (磁盤空間使用)
-![image](https://hackmd.io/_uploads/HJGbNmX3A.png)
+![image](./img/10.png)
 - Node硬碟空間的使用百分比。
 ```promQL!
 (sum(node_filesystem_size_bytes{device!="rootfs",instance="$server"}) - sum(node_filesystem_free_bytes{device!="rootfs",instance="$server"})) / sum(node_filesystem_size_bytes{device!="rootfs",instance="$server"})
@@ -218,7 +218,7 @@ sum by (instance) (rate(node_disk_io_time_seconds_total{instance="$server"}[2m])
 ---
 
 #### Network Received (網絡接收)
-![image](https://hackmd.io/_uploads/SkPUVQm30.png)
+![image](./img/11.png)
 - Node在最近5分鐘內每秒接收到的網絡流量（以bytes為單位）。
 - 排除lo,因為通常不是外部網絡流量。
 ```promQL!
@@ -227,7 +227,7 @@ rate(node_network_receive_bytes_total{instance="$server",device!~"lo"}[5m])
 ---
 
 #### Network Transmitted (網絡發送)
-![image](https://hackmd.io/_uploads/Hymh8mX20.png)
+![image](./img/12.png)
 - 查詢Node在最近5分鐘內每秒發送的網絡流量（以bytes為單位）。
 - 也排除 lo
 ```promQL!
@@ -239,7 +239,7 @@ rate(node_network_transmit_bytes_total{instance="$server",device!~"lo"}[5m])
 #### 3.3.2 Kubernetes cluster monitoring
 
 ##### Network I/O pressure
-![image](https://hackmd.io/_uploads/rkj3WNmnA.png)
+![image](./img/13.png)
 - 計算網路 I/O 壓力，透過容器的接收和傳輸網路流量的差值來衡量
 - sum(rate(container_network_receive_bytes_total{kubernetes_io_hostname=~"^$Node$"}[$interval]))：Node上的容器接收到的網路流量總和，按速率（每秒bytes數）計算。
 - sum(rate(container_network_transmit_bytes_total{kubernetes_io_hostname=~"^$Node$"}[$interval]))：node上的container 傳輸的網路流量總和，按速率計算。
@@ -256,7 +256,7 @@ sum (rate (container_network_transmit_bytes_total{kubernetes_io_hostname=~"^$Nod
 
 
 #### Cluster memory usage
-![image](https://hackmd.io/_uploads/B1v3zVmhC.png)
+![image](./img/14.png)
 - 計算叢集的記憶體使用率。
 - sum(container_memory_working_set_bytes{id="/",kubernetes_io_hostname=~"^$Node$"})：Node上的容器實際使用的記憶體（不包括已釋放但尚未回收的記憶體）。
 - sum(machine_memory_bytes{kubernetes_io_hostname=~"^$Node$"}) * 100：該節點的總記憶體容量。兩者相除並乘以100，得出記憶體使用率的百分比。
@@ -279,7 +279,7 @@ sum (machine_memory_bytes{kubernetes_io_hostname=~"^$Node$"})
 --- 
 
 #### Cluster CPU usage ($interval avg)
-![image](https://hackmd.io/_uploads/HyQGV4Q2C.png)
+![image](./img/15.png)
 - 叢集的 CPU 使用率，按時間間隔（$interval）計算平均值。
 - sum(rate(container_cpu_usage_seconds_total{id="/",kubernetes_io_hostname=~"^$Node$"}[$interval]))：Node上的容器使用的 CPU 時間（以秒為單位），按速率（每秒使用的 CPU 時間）計算。
 - sum(machine_cpu_cores{kubernetes_io_hostname=~"^$Node$"}) * 100：Node上的總 CPU 核心數，並將兩者相除，得出 CPU 使用率的百分比。
@@ -299,7 +299,7 @@ sum (machine_cpu_cores{kubernetes_io_hostname=~"^$Node$"})
 ```
 ---
 #### Cluster filesystem usage
-![image](https://hackmd.io/_uploads/Bk6mEEX20.png)
+![image](./img/16.png)
 - 叢集的檔案系統使用率。
 
 ```promQL!
@@ -318,7 +318,7 @@ sum (container_fs_limit_bytes{device=~"^/dev/vda.$",id="/",kubernetes_io_hostnam
 ```
 ---
 #### Pods CPU usage ($interval avg)
-![image](https://hackmd.io/_uploads/HJylIv7hR.png)
+![image](./img/17.png)
 
 - Pods 的 CPU 使用情況，按時間間隔（$interval）計算平均值
 ```promQL!
@@ -328,7 +328,7 @@ sum (rate (container_cpu_usage_seconds_total{image!="",kubernetes_io_hostname=~"
 ---
 
 #### System services CPU usage ($interval avg)
-![image](https://hackmd.io/_uploads/B1t1OD730.png)
+![image](./img/18.png)
 
 - Pods 的 CPU 使用情況，按時間間隔（$interval）計算平均值
 ```promQL!
@@ -338,7 +338,7 @@ sum (rate (container_cpu_usage_seconds_total{kubernetes_io_hostname=~"kind-contr
 ---
 
 #### Containers CPU usage ($interval avg)
-![image](https://hackmd.io/_uploads/Bk2aSEQ3A.png)
+![image](./img/19.png)
 - 容器的 CPU 使用情況，按時間間隔（$interval）計算平均值
 ```promQL!
 sum (rate (container_cpu_usage_seconds_total{image!="",name=~"^k8s_.*",container_name!="POD",kubernetes_io_hostname=~"^$Node$"}[$interval])) by (container_name, pod_name)
@@ -347,7 +347,7 @@ sum (rate (container_cpu_usage_seconds_total{image!="",name=~"^k8s_.*",container
 ---
 
 #### All processes CPU usage ($interval avg)
-![image](https://hackmd.io/_uploads/rJ6kIE72C.png)
+![image](./img/20.png)
 - 所有 processes 的 CPU 使用情況，按時間間隔（$interval）計算平均值。
 ```promQL!
 sum (rate (container_cpu_usage_seconds_total{id!="/",kubernetes_io_hostname=~"^$Node$"}[$interval])) by (id)
@@ -356,7 +356,7 @@ sum (rate (container_cpu_usage_seconds_total{id!="/",kubernetes_io_hostname=~"^$
 ---
 
 #### Pods memory usage
-![image](https://hackmd.io/_uploads/BykrUP7n0.png)
+![image](./img/21.png)
 
 - 計算 Pods 的記憶體使用情況
 ```promQL!
@@ -366,7 +366,7 @@ sum (container_memory_working_set_bytes{image!="",kubernetes_io_hostname=~"^$Nod
 ---
 
 #### Pods
-![image](https://hackmd.io/_uploads/S1IlFPmhC.png)
+![image](./img/22.png)
 
 - Container 在指定Node上的實際memory使用量
 ```promQL!
@@ -377,7 +377,7 @@ sum (container_memory_working_set_bytes{kubernetes_io_hostname=~"kind-control-pl
 
 
 #### Containers memory usage
-![image](https://hackmd.io/_uploads/S1JSLN7nC.png)
+![image](./img/23.png)
 - Container 的記憶體使用情況
 ```promQL!
 sum (container_memory_working_set_bytes{image!="",name=~"^k8s_.*",container_name!="POD",kubernetes_io_hostname=~"^$Node$"}) by (container_name, pod_name)
@@ -394,7 +394,7 @@ sum (container_memory_working_set_bytes{rkt_container_name!="",kubernetes_io_hos
 ---
 
 #### All processes memory usage
-![image](https://hackmd.io/_uploads/rkdOINQhR.png)
+![image](./img/24.png)
 - 所有 processes 的記憶體使用情況
 ```promQL!
 sum (container_memory_working_set_bytes{id!="/",kubernetes_io_hostname=~"^$Node$"}) by (id)
@@ -403,7 +403,7 @@ sum (container_memory_working_set_bytes{id!="/",kubernetes_io_hostname=~"^$Node$
 ---
 
 #### Pods network I/O ($interval avg)
-![image](https://hackmd.io/_uploads/HJGlvPX3A.png)
+![image](./img/25.png)
 
 -  Pods 的網路 I/O 情況，按時間間隔（$interval）計算平均值。
 ```promQL!
@@ -418,7 +418,7 @@ sum (rate (container_network_transmit_bytes_total{image!="",name=~"^k8s_.*",kube
  
 
 #### Containers network I/O ($interval avg)
-![image](https://hackmd.io/_uploads/H1XJOVQh0.png)
+![image](./img/26.png)
 - 容器的網路 I/O 情況，按時間間隔（$interval）計算平均值。
 - 包括容器名稱、Pod 名稱的接收和傳輸的流量總和差。
 B
@@ -449,7 +449,7 @@ sum (rate (container_network_transmit_bytes_total{rkt_container_name!="",kuberne
 ---
 
 #### All processes network I/O ($interval avg)
-![image](https://hackmd.io/_uploads/B14TDEX2R.png)
+![image](./img/27.png)
 - 所有 processes 的網路 I/O 情況，按時間間隔（$interval）計算平均值。
 - 包括進程 ID 的接收和傳輸的流量總和差。
 A
@@ -472,11 +472,11 @@ sum (rate (container_network_transmit_bytes_total{id!="/",kubernetes_io_hostname
 ```promQL!
 sum(rate(container_cpu_cfs_throttled_seconds_total{id!="/", kubernetes_io_hostname=~"^$Node$"}[$interval])) by (id)
 ```
-![image](https://hackmd.io/_uploads/HJkCWvmnC.png)
+![image](./img/28.png)
 
 
 可以再到worker確認這個container是屬於哪個pod
-![image](https://hackmd.io/_uploads/rypeMDm3C.png)
+![image](./img/29.png)
 
 
 ## 4. 請部署一個容器應用程式在kind叢集，建立一個hpa物件以cpu 使用率到達50%為條件，最多擴充到10個pod。
@@ -593,4 +593,5 @@ php-apache   Deployment/php-apache   cpu: 46%/50%         1         10        7 
 php-apache   Deployment/php-apache   cpu: 42%/50%         1         10        7          14m
 php-apache   Deployment/php-apache   cpu: 47%/50%         1         10        7   
 ```
+
 
