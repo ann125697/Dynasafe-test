@@ -193,7 +193,7 @@ node_memory_MemFree_bytes{instance="$server"}
 ---
 
 #### Disk I/O (磁盤 I/O)
-![image]("./img/9.png")
+![image](./img/9.png)
 - Node 在最近2分鐘內每秒讀取、寫入的磁盤bytes數量及硬碟IO時間。
 - 用 rate() 函數計算時間內的平均讀取、寫入速率。
 ```promQL!
